@@ -1,0 +1,13 @@
+import React from 'react';
+import loadingGIF from '../../images/loading3.gif';
+
+function Gif(props) {
+    const style = props.state ? {display: 'block'} : {display: 'none'};
+    return (
+        <img
+        style={style}
+        src={loadingGIF} className="content-gif" />
+    )
+}
+
+export default Gif;

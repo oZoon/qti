@@ -1,0 +1,117 @@
+import React, { useState } from "react";
+import CreateTaskButton from '../components/createTaskButton';
+import TaskListTable from '../components/taskListTable';
+import Modal from '../components/modal';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale } from "react-datepicker";
+import ru from 'date-fns/locale/ru';
+registerLocale('ru', ru)
+
+import {
+    MODAL_CREATE_TASK,
+    MODAL_DETAIL_TASK,
+    MODAL_EDIT_TASK
+} from '../lib/constants';
+
+const Content = (props) => {
+    const {
+        taskList,
+        onDeleteTask,
+        onSaveData,
+    } = props;
+
+    const [modalType, setModalType] = useState(null);
+    const [modalStyle, setModalStyle] = useState({ "display": "none" });
+    const [modalData, setModalData] = useState(null);
+    const [modalDataIndex, setModalDataIndex] = useState(null);
+
+    // createTask
+    const onCreateTask = () => {
+        setModalType(MODAL_CREATE_TASK);
+        setModalStyle({ "display": "flex" });
+    }
+    const propsCreateTaskButton = {
+        onCreateTask,
+    }
+
+    // detailTask
+    const onDetailTask = (item) => {
+        setModalType(MODAL_DETAIL_TASK);
+        setModalStyle({ "display": "flex" });
+        setModalData(item);
+    }
+
+    // editTask
+    const onEditTask = (item, index) => {
+        setModalType(MODAL_EDIT_TASK);
+        setModalStyle({ "display": "flex" });
+        setModalData(item);
+        setModalDataIndex(index);
+    }
+
+    const propsModal = {
+        modalType,
+        style: modalStyle,
+        setHide: setModalStyle,
+        data: modalData,
+        onSaveData,
+        taskList,
+        index: modalDataIndex,
+    }
+
+    const propsTaskListTable = {
+        taskList,
+        onDeleteTask,
+        onDetailTask,
+        onEditTask,
+    }
+
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(null);
+    const onChange = dates => {
+        const [start, end] = dates;
+        setStartDate(start);
+        setEndDate(end);
+    };
+
+    const CusomButton = React.forwardRef((props, ref) => (
+        <button ref={ref} className="FancyButton" onClick={props.onClick}>
+            {props.value}
+        </button>
+    ));
+    const myRef = React.createRef();
+    return (
+        <>
+            <TaskListTable {...propsTaskListTable} />
+            <CreateTaskButton {...propsCreateTaskButton} />
+            <DatePicker
+
+                selected={startDate}
+                onChange={date => setStartDate(date)}
+                showPreviousMonths
+                customInput={<CusomButton ref={myRef} />}
+                // selected={startDate}
+                // onChange={date => setStartDate(date)}
+                dateFormat="dd.MM.yyyy"
+                monthsShown={3}
+                withPortal
+                // showYearDropdown
+                // locale="ru-RU"
+                locale="ru"
+
+            // onChange={onChange}
+            // startDate={startDate}
+            // endDate={endDate}
+            // selectsRange
+            // inline
+
+
+            />
+            <Modal {...propsModal} />
+        </>
+    );
+
+};
+
+export default Content;

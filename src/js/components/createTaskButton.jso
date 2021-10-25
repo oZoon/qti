@@ -1,0 +1,16 @@
+import React from 'react';
+import createPNG from '../../images/create.png';
+
+function CreateTaskButton(props) {
+    const { onCreateTask } = props;
+    return (
+        <button
+            className="create-item"
+            onClick={() => onCreateTask()}
+        >
+            <img src={createPNG} height="26px" /> Создать заявку
+        </button>
+    )
+}
+
+export default CreateTaskButton;

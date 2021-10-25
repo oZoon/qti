@@ -1,0 +1,42 @@
+$font-family: Tahoma;
+$font-size-15: 15px;
+$font-size-24: 24px;
+$fone-weight-400: 400;
+$fone-weight-500: 500;
+$fone-weight-600: 600;
+$line-height-20: 20px;
+$line-height-30: 30px;
+$border-1: 1px solid black;
+$border-2t: 2px solid transparent;
+$border-2: 2px solid black;
+$border-radius-4: 4px;
+$border-radius-10: 10px;
+$background-color-1: rgb(148 119 82);
+$background-color-2: burlywood;
+$background-color-3: beige;
+$padding-0: 0;
+$padding-8: 8px;
+$margin-4: 4px;
+$margin-8: 8px;
+$margin-15-0: 15px 0;
+$margin-15-8-24-8: 15px 8px 24px 8px;
+$margin-0-auto: 0 auto;
+
+@mixin flex-row {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+}
+@mixin flex-col {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+@mixin flex-col-end {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    justify-content: center;
+}

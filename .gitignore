@@ -1,0 +1,8 @@
+**/.DS_Store
+/node_modules
+/dist
+filters.html
+2public/*
+build
+LICENSE
+README.md

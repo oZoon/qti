@@ -1,0 +1,200 @@
+import React, { useState } from "react";
+import CreateTaskButton from '../components/createTaskButton';
+import TaskListTable from '../components/taskListTable';
+import Modal from '../components/modal';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale } from "react-datepicker";
+import ru from 'date-fns/locale/ru';
+registerLocale('ru', ru)
+import { dateToTimeStamp } from '../lib/utils';
+
+
+import {
+    MODAL_CREATE_TASK,
+    MODAL_DETAIL_TASK,
+    MODAL_EDIT_TASK
+} from '../lib/constants';
+
+import {
+    useTable,
+    useSortBy,
+    usePagination,
+    useGlobalFilter,
+    useFilters
+} from 'react-table'
+
+const GlobalFilter = ({ preGlobalFilteredRows }) => {
+    return <>{`Результат: ${preGlobalFilteredRows.length} записей...`}</>
+}
+
+const Content = (props) => {
+    const {
+        taskList,
+        onDeleteTask,
+        onSaveData,
+    } = props;
+
+    const data = React.useMemo(() => taskList.list, []);
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: 'Номер заявки',
+                accessor: 'taskNumber',
+            },
+            {
+                Header: 'Дата заявки',
+                accessor: 'taskDate',
+                sortType: (a, b) => {
+                    var a1 = dateToTimeStamp(a);
+                    var b1 = dateToTimeStamp(b);
+                    return a1 < b1 ? 1 : -1;
+                }
+            },
+            {
+                Header: 'Клиент',
+                accessor: 'customerName',
+            },
+            {
+                Header: 'Перевозчик',
+                accessor: 'supplyerName',
+            },
+            {
+                Header: 'Контакты перевозчика',
+                accessor: 'supplyerPhone',
+            },
+            {
+                Header: 'Комментарии',
+                accessor: 'comments',
+                disableSortBy: true,
+            },
+            {
+                Header: 'ATI',
+                accessor: 'atiCode',
+            },
+            // {
+            //     Header: 'Действия',
+            //     accessor: 'col2',
+            // },
+        ],
+        []
+    )
+
+    const {
+
+        visibleColumns,
+        preGlobalFilteredRows,
+        page,
+        canPreviousPage,
+        canNextPage,
+        pageOptions,
+        pageCount,
+        gotoPage,
+        nextPage,
+        previousPage,
+        setPageSize,
+        state: {
+            pageIndex,
+            pageSize,
+        },
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        prepareRow,
+    } = useTable(
+        {
+            columns,
+            data,
+            initialState: { pageIndex: 0 },
+        },
+        useFilters,
+        useGlobalFilter,
+        useSortBy,
+        usePagination,
+    )
+
+    return (
+        <>
+            <table {...getTableProps()} className="table">
+                <thead className="table-tr-header">
+                    {headerGroups.map(headerGroup => (
+                        <tr {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroup.headers.map((column, i) => (
+                                <th
+                                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                                    className={`task-item-${i + 1}`}
+                                >
+                                    {column.render('Header')}
+                                    <span>
+                                        {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                                    </span>
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                    <tr>
+                        <th
+                            colSpan={visibleColumns.length}
+                            style={{
+                                textAlign: 'left',
+                            }}
+                        >
+                            <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody {...getTableBodyProps()} className="table-tbody">
+                    {page.map(row => {
+                        prepareRow(row)
+                        return (
+                            <tr {...row.getRowProps()} className="table-tr-content">
+                                {row.cells.map((cell, i) => {
+                                    return (
+                                        <td
+                                            {...cell.getCellProps()}
+                                            className={`task-item-${i + 1}`}
+                                        >
+                                            {cell.render('Cell')}
+                                        </td>
+                                    )
+                                })}
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+            <div className="pagination">
+                <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+                    {'<<'}
+                </button>{' '}
+                <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+                    {'<'}
+                </button>{' '}
+                <button onClick={() => nextPage()} disabled={!canNextPage}>
+                    {'>'}
+                </button>{' '}
+                <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+                    {'>>'}
+                </button>{' '}
+                <span>
+                    Страница {pageIndex + 1} из {pageOptions.length}{' '}
+                </span>
+                <select
+                    value={pageSize}
+                    onChange={e => {
+                        setPageSize(Number(e.target.value))
+                    }}
+                >
+                    {[10, 15, 20].map(pageSize => (
+                        <option key={pageSize} value={pageSize}>
+                            Показать по: {pageSize}
+                        </option>
+                    ))}
+                </select>
+            </div>
+        </>
+    )
+}
+
+export default Content;
